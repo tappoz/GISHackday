@@ -15,7 +15,7 @@ You can run the project using python serving the static HTML / javascript with:
 ```
 python -m SimpleHTTPServer 8888
 ```
-then visiting: ``http://localhost:8888/web_app.html`
+then visiting: `http://localhost:8888/web_app.html`
 
 After loading the page you should see:
 ![ESRI 3D example 1](/doc/2015-09-05_18:47:39_Simple3DMap-GoogleChrome.png)
