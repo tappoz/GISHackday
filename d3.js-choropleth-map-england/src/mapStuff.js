@@ -24,39 +24,91 @@ var svg = d3.select("body").append("svg")
 var tooltip = d3.select("body").append("div")
     .attr("class", "tooltip");
 
-d3.json("data/ldaEngland.json", function(error, ukTopoJson) {
-  var topoJsonFeatures = topojson.feature(ukTopoJson, ukTopoJson.objects.lad);
-  
-  // counties as separate svg elements with their features
-  var countyFill = '#333';
-  svg
-    .selectAll("path")
-    .data(topoJsonFeatures.features)
-  .enter()
-    .append("path")
-    .attr({
-      'fill': countyFill,
-      'stroke': 'green',
-      'stroke-width': 1,
-      'd': path
-    })
-    .on('mouseover', function(d) {
-      svg
-        .selectAll('path:hover')
-        .attr({'fill': 'red'});
+function getColor(valueIn, valuesIn) {
+  var color = d3.scale.linear() // create a linear scale
+    .domain([valuesIn[0],valuesIn[1]])  // input uses min and max values
+    .range([.3,1]);   // output for opacity between .3 and 1 %
+  return color(valueIn);  // return that number to the caller
+}
+
+function displayTooltip(d, displayData) {
+  var htmlTooltip = '' 
+              + "<b>LAD13NM: "+ d.properties.LAD13NM 
+              + "</b><br/>LAD13CD: "+ d.properties.LAD13CD;
+  if (displayData[d.properties.LAD13CD]) {
+    htmlTooltip += "<br/>total population: " + displayData[d.properties.LAD13CD].toLocaleString();
+    // TODO check why d.totalPopulation is undefined
+    // htmlTooltip += "<br/>total population: " + d.totalPopulation.toLocaleString();
+  } else {
+    console.log('Strange data for d.properties ' + JSON.stringify(d.properties) 
+      + ' and displayData ' + JSON.stringify(displayData[d.properties.LAD13CD]));
+  }
+  return htmlTooltip;
+}
+
+d3.csv("data/RUC11_LAD11_EN.csv", function(error, populationData) {
+  // transform all the string values to float numbers
+  var displayData = {};
+  populationData.forEach(function(d) {
+    displayData[d.LAD11CD] = parseFloat(d[' Total population1'].replace(",",""));
+    d.totalPopulation = parseFloat(d[' Total population1'].replace(",",""));
+  });
+  // console.log('Parsed CSV:', populationData);
+  // console.log('Parsed population lookup:', displayData);
+
+  // d3.min/d3.max functions are alternatives to the d3.extent function
+  // var minPopulation = d3.min(populationData, function(d) { return d.totalPopulation; });
+  // var maxPopulation = d3.max(populationData, function(d) { return d.totalPopulation; });
+  // console.log('Evantual Min tot pop:',minPopulation);
+  // console.log('Evantual Max tot pop:',maxPopulation);
+
+  // min/max
+  var extent = d3.extent(populationData, function(d, i) { return d.totalPopulation; });
+  // console.log('Extent min/max:', extent);
+
+  d3.json("data/ldaEngland.json", function(error, ukTopoJson) {
+    var topoJsonFeatures = topojson.feature(ukTopoJson, ukTopoJson.objects.lad);
+    
+    // counties as separate svg elements with their features
+    var countyFill = '#333';
+    svg
+      .selectAll("path")
+      .data(topoJsonFeatures.features)
+    .enter()
+      .append("path")
+      .attr({
+        'fill': countyFill,
+        'stroke': 'green',
+        'stroke-width': 1,
+        'd': path
+      })
+      .attr('fill-opacity', function(d) {
+        var totLDAPop = displayData[d.properties.LAD13CD];
+        // console.log('Current LDA:', JSON.stringify(d.properties));
+        // console.log('Current LAD code:', d.properties.LAD13CD);
+        // console.log('Current total population', totLDAPop);
+        return getColor(totLDAPop, extent);  // give them an opacity value based on their current value
+      })
+      .on('mouseover', function(d) {
+        svg
+          .selectAll('path:hover')
+          .attr({'fill': 'red'});
 
         var mouse = d3.mouse(svg.node()).map( function(d) { return parseInt(d); } );
 
         tooltip
           .classed("hidden", false)
           .attr("style", "left:"+(mouse[0]+25)+"px;top:"+mouse[1]+"px")
-          .html("<b>LAD13NM: "+ d.properties.LAD13NM + "</b><br/>LAD13CDO: "+ d.properties.LAD13CDO);
+          .html(displayTooltip(d, displayData));
 
-        console.log('tooltip properties:', d.properties);
-    })
-    .on('mouseout', function(d) {
-      console.log('return!');
-      svg.selectAll('path').attr({'fill': countyFill});
-      tooltip.classed("hidden", true);
-    });
+          console.log('Tooltip properties:', d.properties);
+          // TODO check why d.totalPopulation is undefined
+          console.log('Tooltip totalPopulation:', d.totalPopulation);
+      })
+      .on('mouseout', function(d) {
+        // console.log('Mouse out return!');
+        svg.selectAll('path').attr({'fill': countyFill});
+        tooltip.classed("hidden", true);
+      });
+  });
 });

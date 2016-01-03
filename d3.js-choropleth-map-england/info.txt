@@ -41,3 +41,9 @@ $ python -m SimpleHTTPServer
 Then visit the web page: `http://localhost:8000/englishLDAs.html`
 
 
+
+HTML colour picker:
+http://www.w3schools.com/tags/ref_colorpicker.asp
+
+Yet another animated choropleth map ...
+http://bl.ocks.org/rgdonohue/9280446
