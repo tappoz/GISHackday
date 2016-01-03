@@ -27,5 +27,5 @@ The population amount has been scaled in colour range that is shown on the area 
 The data regarding the shapes for the LDAs (Local District Authorities of England) has been picked from this repository: [https://github.com/martinjc/UK-GeoJSON](https://github.com/martinjc/UK-GeoJSON).
 The data regarding the population has been found on this Government's statistics website: [https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/389344/RUC11_LAD11_EN.csv](https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/389344/RUC11_LAD11_EN.csv).
 
-![D3.js choroplet map with tooltip showing aggregated data](/doc/2016-01-03_15:03:29_Tooltip.png)
+![D3.js choroplet map with tooltip showing aggregated data](doc/2016-01-03_15:03:29_Tooltip.png)
 
