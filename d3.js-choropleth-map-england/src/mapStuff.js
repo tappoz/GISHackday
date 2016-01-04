@@ -52,6 +52,8 @@ d3.csv("data/RUC11_LAD11_EN.csv", function(error, populationData) {
   populationData.forEach(function(d) {
     displayData[d.LAD11CD] = parseFloat(d[' Total population1'].replace(",",""));
     d.totalPopulation = parseFloat(d[' Total population1'].replace(",",""));
+    // TODO LDA polygon area
+    // http://gis.stackexchange.com/questions/124853/converting-area-of-a-polygon-from-steradians-to-square-kilometers-using-d3-js
   });
   // console.log('Parsed CSV:', populationData);
   // console.log('Parsed population lookup:', displayData);

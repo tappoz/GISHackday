@@ -18,7 +18,7 @@ This has been tested with node version 5.3.0 using `nvm` (Node Version Manager).
 
 You can run the project using python serving the static HTML / javascript with:
 ```
-python -m SimpleHTTPServer 8888
+python -m SimpleHTTPServer 8000
 ```
 then visiting: `http://localhost:8000/englishLDAs.html`
 
