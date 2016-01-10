@@ -64,7 +64,7 @@ function dataAggregation(populationData) {
   return displayData;
 }
 
-d3.csv("data/RUC11_LAD11_EN.csv", function(error, populationData) {
+d3.csv("/data/RUC11_LAD11_EN.csv", function(error, populationData) {
   // transform all the string values to float numbers
   var displayData = dataAggregation(populationData);
   // console.log('Parsed CSV:', populationData);
@@ -80,7 +80,7 @@ d3.csv("data/RUC11_LAD11_EN.csv", function(error, populationData) {
   var extent = d3.extent(populationData, function(d, i) { return d.totalPopulation; });
   // console.log('Extent min/max:', extent);
 
-  d3.json("data/ldaEngland.json", function(error, ukTopoJson) {
+  d3.json("/data/ldaEngland.json", function(error, ukTopoJson) {
     var topoJsonFeatures = topojson.feature(ukTopoJson, ukTopoJson.objects.lad);
     console.log('TopoJSON:',topoJsonFeatures);
     
