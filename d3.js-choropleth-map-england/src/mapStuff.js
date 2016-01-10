@@ -46,15 +46,27 @@ function displayTooltip(d, displayData) {
   return htmlTooltip;
 }
 
-d3.csv("data/RUC11_LAD11_EN.csv", function(error, populationData) {
-  // transform all the string values to float numbers
+function dataAggregation(populationData) {
   var displayData = {};
+  var totEnglishPopulation = 0;
   populationData.forEach(function(d) {
-    displayData[d.LAD11CD] = parseFloat(d[' Total population1'].replace(",",""));
-    d.totalPopulation = parseFloat(d[' Total population1'].replace(",",""));
+    var currentPopulation = parseFloat(d[' Total population1'].replace(",",""));
+    displayData[d.LAD11CD] = currentPopulation;
+    d.totalPopulation = currentPopulation;
     // TODO LDA polygon area
     // http://gis.stackexchange.com/questions/124853/converting-area-of-a-polygon-from-steradians-to-square-kilometers-using-d3-js
+    if (NaN != currentPopulation)
+      totEnglishPopulation += currentPopulation;
   });
+
+  console.log('Total English population:', totEnglishPopulation);
+  console.log('Returning aggregated:', displayData);
+  return displayData;
+}
+
+d3.csv("data/RUC11_LAD11_EN.csv", function(error, populationData) {
+  // transform all the string values to float numbers
+  var displayData = dataAggregation(populationData);
   // console.log('Parsed CSV:', populationData);
   // console.log('Parsed population lookup:', displayData);
 
@@ -70,6 +82,7 @@ d3.csv("data/RUC11_LAD11_EN.csv", function(error, populationData) {
 
   d3.json("data/ldaEngland.json", function(error, ukTopoJson) {
     var topoJsonFeatures = topojson.feature(ukTopoJson, ukTopoJson.objects.lad);
+    console.log('TopoJSON:',topoJsonFeatures);
     
     // counties as separate svg elements with their features
     var countyFill = '#333';
