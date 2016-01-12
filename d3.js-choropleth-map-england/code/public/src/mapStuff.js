@@ -35,8 +35,8 @@ function displayTooltip(d, displayData) {
   var htmlTooltip = '' 
               + "<b>LAD13NM: "+ d.properties.LAD13NM 
               + "</b><br/>LAD13CD: "+ d.properties.LAD13CD;
-  if (displayData[d.properties.LAD13CD]) {
-    htmlTooltip += "<br/>total population: " + displayData[d.properties.LAD13CD].toLocaleString();
+  if (displayData[d.properties.LAD13CD].population) {
+    htmlTooltip += "<br/>total population: " + displayData[d.properties.LAD13CD].population.toLocaleString();
     // TODO check why d.totalPopulation is undefined
     // htmlTooltip += "<br/>total population: " + d.totalPopulation.toLocaleString();
   } else {
@@ -46,27 +46,33 @@ function displayTooltip(d, displayData) {
   return htmlTooltip;
 }
 
-function dataAggregation(populationData) {
-  var displayData = {};
-  var totEnglishPopulation = 0;
-  populationData.forEach(function(d) {
-    var currentPopulation = parseFloat(d[' Total population1'].replace(",",""));
-    displayData[d.LAD11CD] = currentPopulation;
-    d.totalPopulation = currentPopulation;
-    // TODO LDA polygon area
-    // http://gis.stackexchange.com/questions/124853/converting-area-of-a-polygon-from-steradians-to-square-kilometers-using-d3-js
-    if (NaN != currentPopulation)
-      totEnglishPopulation += currentPopulation;
-  });
+// function dataAggregation(populationData) {
+//   var displayData = {};
+//   var totEnglishPopulation = 0;
+//   populationData.forEach(function(d) {
+//     var currentPopulation = parseFloat(d[' Total population1'].replace(",",""));
+//     displayData[d.LAD11CD] = currentPopulation;
+//     d.totalPopulation = currentPopulation;
+//     // TODO LDA polygon area
+//     // http://gis.stackexchange.com/questions/124853/converting-area-of-a-polygon-from-steradians-to-square-kilometers-using-d3-js
+//     if (NaN != currentPopulation)
+//       totEnglishPopulation += currentPopulation;
+//   });
 
-  console.log('Total English population:', totEnglishPopulation);
-  console.log('Returning aggregated:', displayData);
-  return displayData;
-}
+//   console.log('Total English population:', totEnglishPopulation);
+//   console.log('Returning aggregated:', displayData);
+//   return displayData;
+// }
 
-d3.csv("/data/RUC11_LAD11_EN.csv", function(error, populationData) {
+// d3.csv("/data/RUC11_LAD11_EN.csv", function(error, populationData) {
+$.getJSON('http://localhost:3000/helpers/population')
+  .fail(function(err) {console.log('error!', err);})
+  .done(function(populationData) {
+
   // transform all the string values to float numbers
-  var displayData = dataAggregation(populationData);
+  // var displayData = dataAggregation(populationData);
+  var displayData = populationData;
+  console.log('POPULATION!!!', displayData);
   // console.log('Parsed CSV:', populationData);
   // console.log('Parsed population lookup:', displayData);
 
@@ -77,7 +83,11 @@ d3.csv("/data/RUC11_LAD11_EN.csv", function(error, populationData) {
   // console.log('Evantual Max tot pop:',maxPopulation);
 
   // min/max
-  var extent = d3.extent(populationData, function(d, i) { return d.totalPopulation; });
+  // var extent = d3.extent(populationData, function(d, i) { return d.totalPopulation; });
+  var values = $.map(displayData, function(v) { return v; });
+  var extent = [];
+  extent[0] = Math.min.apply(Math,values);
+  extent[1] = Math.max.apply(Math,values);
   // console.log('Extent min/max:', extent);
 
   d3.json("/data/ldaEngland.json", function(error, ukTopoJson) {
@@ -98,7 +108,11 @@ d3.csv("/data/RUC11_LAD11_EN.csv", function(error, populationData) {
         'd': path
       })
       .attr('fill-opacity', function(d) {
-        var totLDAPop = displayData[d.properties.LAD13CD];
+        var currentData = displayData[d.properties.LAD13CD];
+        var totalLDAPop = undefined;
+        if (currentData) {
+          totLDAPop = currentData.population;
+        }
         // console.log('Current LDA:', JSON.stringify(d.properties));
         // console.log('Current LAD code:', d.properties.LAD13CD);
         // console.log('Current total population', totLDAPop);

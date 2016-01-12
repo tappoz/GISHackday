@@ -15,13 +15,18 @@ var populationData;
 function enrichPopulation(callback) {
   csvParse(populationCsv, {columns: true}, function(err, data) {
     populationData = {};
+    // populationData.totEnglishPopulation = 0;
     data.forEach(function(line) {
       console.log('line!', line);
       
       if (line.LAD11CD) {
         console.log('ID LAD11CD:', line.LAD11CD);
+        var currentPopulation = parseFloat(line[' Total population1'].replace(",",""));
         populationData[line.LAD11CD] = {};
-        populationData[line.LAD11CD].population = parseFloat(line[' Total population1'].replace(",",""));  
+        populationData[line.LAD11CD].population = currentPopulation;
+
+        // if (NaN != currentPopulation)
+        //   populationData.totEnglishPopulation += currentPopulation;
       }
     });
     console.log('Done with enrich!');
