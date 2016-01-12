@@ -3,6 +3,7 @@ var mustacheExpress = require('mustache-express');
 var path = require('path');
 
 var geomapsRoutes = require('./routes/geomaps');
+var helpersRoutes = require('./routes/helpers');
 
 var app = express();
 
@@ -13,6 +14,7 @@ app.use('src', express.static(path.join(__dirname, 'frontendCode/src')));
 // app.use('/lib',  express.static(__dirname + '/bower_components'));
 
 app.use('/geomaps', geomapsRoutes);
+app.use('/helpers', helpersRoutes);
 
 // http://www.learnfast.ninja/posts/53a6b961d972e2e411bf82f2
 app.engine('mustache', mustacheExpress());
