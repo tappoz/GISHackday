@@ -1,6 +1,7 @@
 var express = require('express');
 var fs = require('fs');
 var csvParse = require('csv-parse');
+var topojson = require('topojson');
 
 var helpersRouter = express.Router();
 
@@ -47,5 +48,25 @@ helpersRouter.get('/population', function(req, res, next) {
     res.json(populationData);
   });
 });
+
+var ldaGeoJsonPath = __dirname + '/../data/ldaEngland.json';
+var ldaGeoJson = JSON.parse(fs.readFileSync(ldaGeoJsonPath, 'utf8'));
+var ldaTopoJson;
+
+function getTopoJson(callback) {
+  if (!ldaTopoJson) {
+    console.log('Transforming the GeoJson to TopoJson');
+    ldaTopoJson = topojson.feature(ldaGeoJson, ldaGeoJson.objects.lad, function() { return callback(); });
+  }
+  callback();
+};
+
+helpersRouter.get('/lda-polygons', function(req, res) {
+  getTopoJson(function() {
+    console.log('Returning the TopoJson LDA poligons');
+    res.json(ldaTopoJson);
+  });
+});
+
 
 module.exports = helpersRouter;

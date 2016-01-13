@@ -62,8 +62,7 @@ $.getJSON('http://localhost:3000/helpers/population')
   extent[1] = Math.max.apply(Math,populationValues);
   console.log('Extent min/max:', extent);
 
-  d3.json("/data/ldaEngland.json", function(error, ukTopoJson) {
-    var topoJsonFeatures = topojson.feature(ukTopoJson, ukTopoJson.objects.lad);
+  d3.json('http://localhost:3000/helpers/lda-polygons', function(error, topoJsonFeatures) {
     console.log('TopoJSON:',topoJsonFeatures);
     
     // counties as separate svg elements with their features
@@ -103,8 +102,8 @@ $.getJSON('http://localhost:3000/helpers/population')
           .html(displayTooltip(d, displayData));
 
           console.log('Tooltip properties:', d.properties);
-          // TODO check why d.totalPopulation is undefined
-          console.log('Tooltip totalPopulation:', d.totalPopulation);
+          console.log('Tooltip total English population:', displayData.totPopulation);
+          console.log('Tooltip LDA population:', displayData[d.properties.LAD13CD].population);
       })
       .on('mouseout', function(d) {
         // console.log('Mouse out return!');
