@@ -38,7 +38,7 @@ function displayTooltip(d, displayData) {
   if (displayData[d.properties.LAD13CD].population) {
     htmlTooltip += "<br/>total population: " + displayData[d.properties.LAD13CD].population.toLocaleString();
     // TODO check why d.totalPopulation is undefined
-    // htmlTooltip += "<br/>total population: " + d.totalPopulation.toLocaleString();
+    htmlTooltip += "<br/>total English population: " + displayData.totPopulation.toLocaleString();
   } else {
     console.log('Strange data for d.properties ' + JSON.stringify(d.properties) 
       + ' and displayData ' + JSON.stringify(displayData[d.properties.LAD13CD]));
@@ -46,49 +46,21 @@ function displayTooltip(d, displayData) {
   return htmlTooltip;
 }
 
-// function dataAggregation(populationData) {
-//   var displayData = {};
-//   var totEnglishPopulation = 0;
-//   populationData.forEach(function(d) {
-//     var currentPopulation = parseFloat(d[' Total population1'].replace(",",""));
-//     displayData[d.LAD11CD] = currentPopulation;
-//     d.totalPopulation = currentPopulation;
-//     // TODO LDA polygon area
-//     // http://gis.stackexchange.com/questions/124853/converting-area-of-a-polygon-from-steradians-to-square-kilometers-using-d3-js
-//     if (NaN != currentPopulation)
-//       totEnglishPopulation += currentPopulation;
-//   });
-
-//   console.log('Total English population:', totEnglishPopulation);
-//   console.log('Returning aggregated:', displayData);
-//   return displayData;
-// }
-
-// d3.csv("/data/RUC11_LAD11_EN.csv", function(error, populationData) {
 $.getJSON('http://localhost:3000/helpers/population')
   .fail(function(err) {console.log('error!', err);})
   .done(function(populationData) {
 
   // transform all the string values to float numbers
-  // var displayData = dataAggregation(populationData);
   var displayData = populationData;
-  console.log('POPULATION!!!', displayData);
-  // console.log('Parsed CSV:', populationData);
-  // console.log('Parsed population lookup:', displayData);
-
-  // d3.min/d3.max functions are alternatives to the d3.extent function
-  // var minPopulation = d3.min(populationData, function(d) { return d.totalPopulation; });
-  // var maxPopulation = d3.max(populationData, function(d) { return d.totalPopulation; });
-  // console.log('Evantual Min tot pop:',minPopulation);
-  // console.log('Evantual Max tot pop:',maxPopulation);
+  console.log('Retrieved population data:', displayData);
 
   // min/max
-  // var extent = d3.extent(populationData, function(d, i) { return d.totalPopulation; });
-  var values = $.map(displayData, function(v) { return v; });
+  var populationValues = $.map(displayData, function(v) { return v.population; });
+  console.log('Population values',populationValues);
   var extent = [];
-  extent[0] = Math.min.apply(Math,values);
-  extent[1] = Math.max.apply(Math,values);
-  // console.log('Extent min/max:', extent);
+  extent[0] = Math.min.apply(Math,populationValues);
+  extent[1] = Math.max.apply(Math,populationValues);
+  console.log('Extent min/max:', extent);
 
   d3.json("/data/ldaEngland.json", function(error, ukTopoJson) {
     var topoJsonFeatures = topojson.feature(ukTopoJson, ukTopoJson.objects.lad);
