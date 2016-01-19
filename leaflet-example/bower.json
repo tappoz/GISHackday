@@ -1,0 +1,19 @@
+{
+  "name": "leaflet-example",
+  "homepage": "https://github.com/tappoz/GISHackday",
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "lib",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "leaflet": "v0.7.7"
+  }
+}
