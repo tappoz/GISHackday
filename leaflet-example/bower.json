@@ -14,6 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "leaflet": "v0.7.7"
+    "leaflet": "v0.7.7",
+    "requirejs": "~2.1.22"
   }
 }
