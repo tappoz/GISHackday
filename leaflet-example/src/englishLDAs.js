@@ -19,22 +19,17 @@ require([
 
   var englishLdaMap = L.map('englishLdaMap').setView([51.505, -0.09], 5);
 
-  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6IjZjNmRjNzk3ZmE2MTcwOTEwMGY0MzU3YjUzOWFmNWZhIn0.Y8bhBaUMqFiPrDRW9hieoQ', {
-    maxZoom: 18,
-    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
-      '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-      'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-    id: 'mapbox.streets'
-  }).addTo(englishLdaMap);
+  var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+  var osm = new L.TileLayer(osmUrl, {minZoom: 5, attribution: osmAttrib}); 
+
+  englishLdaMap.addLayer(osm);
 
   var topoLayer = new L.TopoJSON();
 
-  $.getJSON('data/lad.json')
-    .done(addTopoData);
-   
-  function addTopoData(topoData){  
-    topoLayer.addData(topoData);
-    topoLayer.addTo(englishLdaMap);
-  }
-
+  $.getJSON('data/topo_lad.json')
+    .done(function(topoLadData) {
+      topoLayer.addData(topoLadData);
+      topoLayer.addTo(englishLdaMap);
+    });
 });
